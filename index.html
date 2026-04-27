@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HUG 전세보증금반환보증 계산기 | 제이프라임 공인중개사 사무소</title>
+<meta name="description" content="HUG 전세보증금반환보증 주택가격 산정 및 예상보증료 계산기. 제주 대정 영어교육도시 전문 제이프라임 공인중개사 사무소 제공.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: '맑은 고딕', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    font-size: 14px;
+    background: #eef2f7;
+    color: #222;
+    min-height: 100vh;
+  }
+
+  /* 헤더 */
+  .site-header {
+    background: #1a5fa8;
+    color: #fff;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .site-header .logo { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+  .site-header .sub { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+  .site-header .hug-badge {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+
+  /* 탭 */
+  .container { max-width: 900px; margin: 0 auto; padding: 16px 12px 40px; }
+  .tab-bar { display: flex; gap: 3px; }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid #aabcd8;
+    border-bottom: none;
+    background: #c8d8ec;
+    color: #1a2e4a;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.4;
+    border-radius: 4px 4px 0 0;
+    transition: background 0.15s;
+  }
+  .tab-btn.active { background: #fff; color: #1a5fa8; border-bottom: 1px solid #fff; position: relative; z-index: 2; }
+  .tab-btn:hover:not(.active) { background: #b0c8e0; }
+
+  .panel {
+    background: #fff;
+    border: 1px solid #aabcd8;
+    padding: 16px;
+    display: none;
+    border-radius: 0 0 6px 6px;
+  }
+  .panel.active { display: block; }
+
+  /* 섹션 레이블 */
+  .sec-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a5fa8;
+    border-left: 4px solid #1a5fa8;
+    padding-left: 8px;
+    margin-bottom: 10px;
+  }
+  .panel-intro {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 12px;
+    line-height: 1.7;
+    background: #f0f6ff;
+    border-left: 3px solid #7fa3d0;
+    padding: 8px 10px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* 메서드 블록 */
+  .method-block {
+    border: 1px solid #c0d0e4;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .method-head {
+    background: #e8f0f8;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s;
+  }
+  .method-head:hover { background: #d8e8f4; }
+  .num-badge {
+    background: #1a5fa8;
+    color: #fff;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .method-title { font-size: 13px; font-weight: 600; color: #1a2e4a; flex: 1; }
+  .toggle-arrow { font-size: 11px; color: #666; transition: transform 0.2s; }
+  .toggle-arrow.open { transform: rotate(180deg); }
+
+  .method-body {
+    padding: 12px 14px;
+    border-top: 1px solid #c0d0e4;
+    display: none;
+    background: #fafcff;
+  }
+  .method-body.open { display: block; }
+
+  /* 폼 필드 */
+  .field-group { margin-bottom: 10px; }
+  .field-group:last-of-type { margin-bottom: 0; }
+  .field-label { font-size: 12px; color: #334; font-weight: 500; margin-bottom: 4px; display: block; }
+  .field-input {
+    width: 100%;
+    height: 32px;
+    border: 1px solid #7fa3d0;
+    border-radius: 3px;
+    font-size: 13px;
+    padding: 0 8px;
+    background: #fff;
+    color: #222;
+    transition: border-color 0.15s;
+  }
+  .field-input:focus { outline: none; border-color: #1a5fa8; background: #f5f8ff; box-shadow: 0 0 0 2px rgba(26,95,168,0.12); }
+  .field-input.w-sm { width: 100px; }
+  .field-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .daeji-wrap { display: flex; align-items: center; gap: 6px; }
+  .daeji-wrap .field-input { flex: 1; }
+  .daeji-wrap span { font-size: 12px; color: #666; white-space: nowrap; }
+
+  .sub-note {
+    font-size: 11.5px;
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 10px;
+    padding: 6px 8px;
+    background: #f5f8ff;
+    border-radius: 3px;
+  }
+  .sub-note a { color: #1a5fa8; }
+
+  /* 버튼 */
+  .btn-calc {
+    margin-top: 10px;
+    height: 34px;
+    padding: 0 18px;
+    font-size: 13px;
+    font-weight: 600;
+    background: #1a5fa8;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-calc:hover { background: #154070; }
+  .btn-use {
+    height: 28px;
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e0f0e0;
+    color: #1a6010;
+    border: 1px solid #7ab07a;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: background 0.15s;
+  }
+  .btn-use:hover { background: #c8e8c8; }
+  .btn-reset {
+    height: 34px;
+    padding: 0 14px;
+    font-size: 13px;
+    background: #e8eef5;
+    color: #1a2e4a;
+    border: 1px solid #7fa3d0;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 6px;
+  }
+  .btn-reset:hover { background: #d0dff0; }
+
+  /* 메서드 결과 */
+  .method-result {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #e8f5ff;
+    border: 1px solid #7fa3d0;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #0a3060;
+    display: none;
+  }
+  .method-result .big { font-size: 16px; font-weight: 700; color: #c00; }
+
+  /* 이월 박스 */
+  .carry-box {
+    background: #fff8e0;
+    border: 1px solid #d0b040;
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #5a3a00;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .carry-box.show { display: flex; }
+
+  /* 폼 테이블 (탭3) */
+  .form-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+  .form-tbl td { padding: 7px 10px; border: 1px solid #c8d8e8; vertical-align: middle; }
+  .form-tbl .lbl { background: #e8f0f8; font-size: 12px; font-weight: 600; color: #1a2e4a; width: 40%; white-space: nowrap; }
+  .form-tbl .hint { font-size: 11px; color: #888; display: block; margin-top: 2px; }
+  .form-tbl select {
+    height: 32px;
+    border: 1px solid #7fa3d0;
+    font-size: 13px;
+    padding: 0 6px;
+    background: #fff;
+    color: #222;
+    border-radius: 3px;
+    width: 100%;
+  }
+
+  /* 결과 박스 */
+  .result-box {
+    border: 2px solid #1a5fa8;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .result-head {
+    background: #1a5fa8;
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .result-cell {
+    padding: 12px 14px;
+    border: 1px solid #c0d0e4;
+  }
+  .result-cell .rl { font-size: 11px; color: #666; margin-bottom: 4px; }
+  .result-cell .rv { font-size: 20px; font-weight: 700; color: #1a2e4a; }
+  .result-cell .rv.red { color: #c00; }
+  .result-cell .rs { font-size: 11px; color: #999; margin-top: 3px; }
+
+  /* 상태 박스 */
+  .status-ok {
+    background: #e8f5e0; border: 1px solid #5a9a30;
+    padding: 10px 14px; border-radius: 4px;
+    font-size: 13px; font-weight: 700; color: #2a6010;
+    margin-top: 10px;
+  }
+  .status-ng {
+    background: #fce8e8; border: 1px solid #c04040;
+    padding: 10px 14px; border-radius: 4px;
+    font-size: 13px; font-weight: 700; color: #900;
+    margin-top: 10px;
+  }
+  .check-list { margin-top: 8px; }
+  .chk { display: flex; align-items: flex-start; gap: 6px; margin-top: 5px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .dot-ok { background: #5a9a30; }
+  .dot-ng { background: #c04040; }
+
+  .info-note {
+    font-size: 11.5px;
+    color: #777;
+    margin-top: 12px;
+    line-height: 1.8;
+    padding: 10px 12px;
+    background: #f8f8f8;
+    border-radius: 4px;
+    border-top: 3px solid #dde5f0;
+  }
+  .info-note a { color: #1a5fa8; }
+
+  /* 푸터 */
+  .site-footer {
+    background: #1a2e4a;
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .site-footer b { color: #fff; }
+
+  /* 반응형 */
+  @media (max-width: 600px) {
+    .result-grid { grid-template-columns: 1fr; }
+    .field-row2, .field-row3 { grid-template-columns: 1fr; }
+    .tab-btn { font-size: 11px; padding: 8px 4px; }
+    .site-header .logo { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div>
+    <div class="logo">제이프라임 공인중개사 사무소</div>
+
+  </div>
+  <div class="hug-badge">HUG 전세보증금반환보증 계산기</div>
+</header>
+
+<div class="container">
+
+  <div class="tab-bar">
+    <div class="tab-btn active" onclick="switchTab(0)">① 아파트·오피스텔<br>주택가격 산정</div>
+    <div class="tab-btn" onclick="switchTab(1)">② 기타주택<br>주택가격 산정</div>
+    <div class="tab-btn" onclick="switchTab(2)">③ 예상보증금액<br>계산 (2년 기준)</div>
+  </div>
+
+  <!-- 탭 1: 아파트·오피스텔 -->
+  <div class="panel active" id="panel0">
+    <div class="sec-label">아파트 · 주거용 오피스텔 · 노인복지주택 주택가격 산정</div>
+    <div class="panel-intro">
+      아래 ①~⑥ 방법 중 해당하는 방법을 펼쳐서 주택가격을 산정하세요.<br>
+      산출된 가격은 <b>"③ 예상보증금액 계산에 적용 →"</b> 버튼으로 바로 연동됩니다.
+    </div>
+
+    <div class="method-block">
+      <div class="method-head" onclick="toggleM('m_a0',this)">
+        <div class="num-badge">①</div>
+        <div class="method-title">KB시세 / 한국부동산원 부동산테크 시세</div>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="method-body" id="m_a0">
+        <div class="sub-note">
+          · KB시세: <a href="https://onland.kbstar.com" target="_blank">onland.kbstar.com</a> → 일반평균가 적용<br>
+          · 부동산테크: <a href="https://www.rtech.or.kr" target="_blank">rtech.or.kr</a> → 상한가+하한가 산술평균 적용<br>
+          · 아파트 최저층 및 주거용 오피스텔은 KB시세정보의 하위평균가 또는 부동산테크 하한가 적용
+        </div>
+        <div class="field-group">
+          <label class="field-label">조회한 시세 (원)</label>
+          <input class="field-input" id="a0v" type="text" placeholder="예: 450,000,000" oninput="nf(this)">
+        </div>
+        <div>
+          <button class="btn-calc" onclick="usePrice('a0v',1,'① KB/부동산원 시세')">이 가격 사용</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="method-block">
+      <div class="method-head" onclick="toggleM('m_a1',this)">
+        <div class="num-badge">②</div>
+        <div class="method-title">공시가격 × 140%</div>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="method-body" id="m_a1">
+        <div class="sub-note">
+          · 아파트 공시가격: <a href="https://www.realtyprice.kr" target="_blank">realtyprice.kr</a> → 공동주택공시가격 열람<br>
+          · 오피스텔 공시가격: <a href="https://www.hometax.go.kr" target="_blank">hometax.go.kr</a> → 오피스텔 및 상업용건물 기준시가 조회
+        </div>
+        <div class="field-group">
+          <label class="field-label">공시가격 (원)</label>
+          <input class="field-input" id="a1v" type="text" placeholder="예: 320,000,000" oninput="nf(this);liveCalc('a1v',1.4,'a1r')">
+        </div>
+        <div class="method-result" id="a1r"></div>
+        <button class="btn-calc" onclick="calcAndUse('a1v',1.4,'a1r','② 공시가격×140%')">계산 후 사용</button>
+      </div>
+    </div>
+
+    <div class="method-block">
+      <div class="method-head" onclick="toggleM('m_a2',this)">
+        <div class="num-badge">③</div>
+        <div class="method-title">안심전세 앱 주택시세 하한가</div>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="method-body" id="m_a2">
+        <div class="sub-note">
+          · 안심전세 앱 또는 부동산테크(<a href="https://www.rtech.or.kr" target="_blank">rtech.or.kr</a>)<br>
+          · 50세대 미만 아파트 및 연립·다세대 참고시세 조회 → 하한가 적용
+        </div>
+        <div class="field-group">
+          <label class="field-label">안심전세 시세 하한가 (원)</label>
+          <input class="field-input" id="a2v" type="text" placeholder="예: 430,000,000" oninput="nf(this)">
+        </div>
+        <button class="btn-calc" onclick="usePrice('a2v',1,'③ 안심전세 시세 하한가')">이 가격 사용</button>
+      </div>
+    </div>
+
+    <div class="method-block">
+      <div class="method-head" onclick="toggleM('m_a3',this)">
+        <div class="num-badge">④</div>
+        <div class="method-title">등기부등본 1년 이내 최근 매매 거래가액</div>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="method-body" id="m_a3">
+        <div class="sub-note">· 해당 세대의 등기부등본상 <b>1년 이내</b> 최근 매매 거래가액</div>
+        <div class="field-group">
+          <label class="field-label">등기부 매매 거래가액 (원)</label>
+          <input class="field-input" id="a3v" type="text" placeholder="예: 470,000,000" oninput="nf(this)">
+        </div>
+        <button class="btn-calc" onclick="usePrice('a3v',1,'④ 등기부 최근 매매가')">이 가격 사용</button>
+      </div>
+    </div>
+
+    <div class="method-block">
+      <div class="method-head" onclick="toggleM('m_a4',this)">
+        <div class="num-badge">⑤</div>
+        <div class="method-title">분양가격 × 90% (준공 후 1년 이내 한정)</div>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="method-body" id="m_a4">
+        <div class="sub-note">· 준공 후 1년이 지나지 않은 주택에 한하여 적용</div>
+        <div class="field-group">
+          <label class="field-label">분양가격 (원)</label>
+          <input class="field-input" id="a4v" type="text" placeholder="예: 500,000,000" oninput="nf(this);liveCalc('a4v',0.9,'a4r')">
+        </div>
+        <div class="method-result" id="a4r"></div>
+        <button class="btn-calc" onclick="calcAndUse('a4v',0.9,'a4r','⑤ 분양가격×90%')">계산 후 사용</button>
+      </div>
+    </div>
+
+    <div class="method-block">
+      <div class="method-head" onclick="toggleM('m_a5',this)">
+        <div class="num-badge">⑥</div>
+        <div class="method-title">토지공시지가 + 건물시가표준액 → 세대면적비율 × 140%</div>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="method-body" id="m_a5">
+        <div class="sub-note">
+          · 토지공시지가: <a href="https://www.realtyprice.kr:447" target="_blank">realtyprice.kr:447</a> → 개별공시지가 × 등기부상 토지면적<br>
+          · 건물시가표준액: 관할 구청(세무과) 확인 또는 임대인으로부터 취득세납부확인서 징구
+        </div>
+        <div class="field-row2">
+          <div class="field-group">
+            <label class="field-label">토지공시지가 (원/㎡)</label>
+            <input class="field-input" id="a5_lp" type="text" placeholder="예: 1,500,000" oninput="nf(this);calcA6()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">토지면적 (㎡)</label>
+            <input class="field-input" id="a5_la" type="text" placeholder="예: 200" oninput="nf(this);calcA6()">
+          </div>
+        </div>
+        <div class="field-row2">
+          <div class="field-group">
+            <label class="field-label">건물시가표준액 (원)</label>
+            <input class="field-input" id="a5_bv" type="text" placeholder="예: 80,000,000" oninput="nf(this);calcA6()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">전체 연면적 (㎡)</label>
+            <input class="field-input" id="a5_ta" type="text" placeholder="예: 800" oninput="nf(this);calcA6()">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">해당 세대 전용면적 (㎡)</label>
+          <input class="field-input" style="max-width:220px;" id="a5_sa" type="text" placeholder="예: 84" oninput="nf(this);calcA6()">
+        </div>
+        <div class="method-result" id="a5r"></div>
+        <button class="btn-calc" onclick="useA6()">계산 후 사용</button>
+      </div>
+    </div>
+
+    <div class="carry-box" id="carryA">
+      <span id="carryA_txt"></span>
+    </div>
+  </div>
+
+  <!-- 탭 2: 기타주택 -->
+  <div class="panel" id="panel1">
+    <div class="sec-label">기타주택 (연립·다세대·단독·다중·다가구) 주택가격 산정</div>
+    <div class="panel-intro">
+      아래 ①~④ 방법 중 해당하는 방법을 펼쳐서 주택가격을 산정하세요.<br>
+      · 연립·다세대: ①②③④ 방법 순서로 적용 (없을 경우 다음 방법)<br>
+      · 단독·다가구: ①② 방법이 없을 경우 ③④ 적용
+    </div>
+
+    <div class="method-block">
+      <div class="method-head" onclick="toggleM('m_b0',this)">
+        <div class="num-badge">①</div>
+        <div class="method-title">공동주택 / 개별단독주택 공시가격 × 140%</div>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="method-body" id="m_b0">
+        <div class="sub-note">
+          · [연립·다세대] 국토교통부 공동주택가격 × 140%<br>
+          · [단독·다가구] 개별단독주택가격 × 140%<br>
+          · 조회: <a href="https://www.realtyprice.kr" target="_blank">realtyprice.kr</a> (공동/개별단독주택공시가격 열람) 또는 해당 시·군·구청 홈페이지
+        </div>
+        <div class="field-group">
+          <label class="field-label">공시가격 (원)</label>
+          <input class="field-input" id="b0v" type="text" placeholder="예: 250,000,000" oninput="nf(this);liveCalc('b0v',1.4,'b0r')">
+        </div>
+        <div class="method-result" id="b0r"></div>
+        <button class="btn-calc" onclick="calcAndUseB('b0v',1.4,'b0r','① 공시가격×140%')">계산 후 사용</button>
+      </div>
+    </div>
+
+    <div class="method-block">
+      <div class="method-head" onclick="toggleM('m_b1',this)">
+        <div class="num-badge">②</div>
+        <div class="method-title">안심전세 시세 하한가 / 등기부 최근 매매가</div>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="method-body" id="m_b1">
+        <div class="sub-note">
+          · [연립·다세대] 안심전세 앱 또는 부동산테크(<a href="https://www.rtech.or.kr" target="_blank">rtech.or.kr</a>) → 50세대미만아파트 및 연립·다세대 참고시세 하한가<br>
+          · [단독·다가구] 해당 주택 등기부등본상 1년 이내 최근 매매 거래가액
+        </div>
+        <div class="field-group">
+          <label class="field-label">시세 하한가 또는 매매가 (원)</label>
+          <input class="field-input" id="b1v" type="text" placeholder="예: 280,000,000" oninput="nf(this)">
+        </div>
+        <button class="btn-calc" onclick="usePriceB('b1v',1,'② 시세하한가/매매가')">이 가격 사용</button>
+      </div>
+    </div>
+
+    <div class="method-block">
+      <div class="method-head" onclick="toggleM('m_b2',this)">
+        <div class="num-badge">③</div>
+        <div class="method-title">(토지공시지가 × 면적 + 건물시가표준액) × 140%</div>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="method-body" id="m_b2">
+        <div class="sub-note">
+          · 토지공시지가: <a href="https://www.realtyprice.kr:447" target="_blank">realtyprice.kr:447</a> → 개별공시지가 × 등기부상 토지면적<br>
+          · 건물시가표준액: 관할 구청(세무과) 확인 또는 취득세납부확인서 징구<br>
+          · 또는 감정평가금액 × 100%
+        </div>
+        <div class="field-row2">
+          <div class="field-group">
+            <label class="field-label">토지공시지가 (원/㎡)</label>
+            <input class="field-input" id="b2_lp" type="text" placeholder="예: 800,000" oninput="nf(this);calcB3()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">토지면적 (㎡)</label>
+            <input class="field-input" id="b2_la" type="text" placeholder="예: 150" oninput="nf(this);calcB3()">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">건물시가표준액 (원)</label>
+          <input class="field-input" id="b2_bv" type="text" placeholder="예: 60,000,000" oninput="nf(this);calcB3()">
+        </div>
+        <div class="method-result" id="b2r"></div>
+        <button class="btn-calc" onclick="useB3()">계산 후 사용</button>
+      </div>
+    </div>
+
+    <div class="method-block">
+      <div class="method-head" onclick="toggleM('m_b3',this)">
+        <div class="num-badge">④</div>
+        <div class="method-title">[연립·다세대] 세대 면적비율 적용 × 140% (또는 감정평가 × 90%)</div>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="method-body" id="m_b3">
+        <div class="sub-note">
+          · 토지공시지가+건물시가표준액 합산 후 전체 연면적 대비 해당 세대 면적 비율로 산출한 금액 × 140%<br>
+          · 또는 감정평가금액 × 90% (HUG 인정 감정평가의 경우 100%)
+        </div>
+        <div class="field-row2">
+          <div class="field-group">
+            <label class="field-label">토지공시지가 (원/㎡)</label>
+            <input class="field-input" id="b3_lp" type="text" placeholder="예: 800,000" oninput="nf(this);calcB4()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">토지면적 (㎡)</label>
+            <input class="field-input" id="b3_la" type="text" placeholder="예: 150" oninput="nf(this);calcB4()">
+          </div>
+        </div>
+        <div class="field-row2">
+          <div class="field-group">
+            <label class="field-label">건물시가표준액 (원)</label>
+            <input class="field-input" id="b3_bv" type="text" placeholder="예: 60,000,000" oninput="nf(this);calcB4()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">전체 연면적 (㎡)</label>
+            <input class="field-input" id="b3_ta" type="text" placeholder="예: 450" oninput="nf(this);calcB4()">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">해당 세대 전용면적 (㎡)</label>
+          <input class="field-input" style="max-width:220px;" id="b3_sa" type="text" placeholder="예: 59" oninput="nf(this);calcB4()">
+        </div>
+        <div class="method-result" id="b3r"></div>
+        <button class="btn-calc" onclick="useB4()">계산 후 사용</button>
+      </div>
+    </div>
+
+    <div class="carry-box" id="carryB">
+      <span id="carryB_txt"></span>
+    </div>
+  </div>
+
+  <!-- 탭 3: 예상보증금액 -->
+  <div class="panel" id="panel2">
+    <div class="carry-box" id="carryC">
+      <span id="carryC_txt"></span>
+    </div>
+    <div class="sec-label">보증금액 기본정보 입력</div>
+    <table class="form-tbl">
+      <tr>
+        <td class="lbl">주택 유형</td>
+        <td>
+          <select id="ht" onchange="calcPrem()">
+            <option value="">— 선택 —</option>
+            <option value="apt">아파트</option>
+            <option value="officetel">주거용 오피스텔</option>
+            <option value="welfare">노인복지주택</option>
+            <option value="multi">연립·다세대주택</option>
+            <option value="single">단독·다중·다가구</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="lbl">지역</td>
+        <td>
+          <select id="region" onchange="calcPrem()">
+            <option value="other">비수도권 (제주 포함) — 상한 5억원</option>
+            <option value="capital">수도권 — 상한 7억원</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="lbl">주택가격 (A) 원<span class="hint">①② 탭에서 산정하거나 직접 입력</span></td>
+        <td><input class="field-input" id="pA" type="text" placeholder="예: 500,000,000" oninput="nf(this);calcPrem()"></td>
+      </tr>
+      <tr>
+        <td class="lbl">전세보증금 (B) 원</td>
+        <td><input class="field-input" id="pB" type="text" placeholder="예: 400,000,000" oninput="nf(this);calcPrem()"></td>
+      </tr>
+      <tr>
+        <td class="lbl">선순위채권 (C) 원<span class="hint">근저당권 등 선순위 담보채권</span></td>
+        <td><input class="field-input" id="pC" type="text" value="0" oninput="nf(this);calcPrem()"></td>
+      </tr>
+      <tr>
+        <td class="lbl">선순위임차보증금 (D) 원<span class="hint">먼저 체결된 임차보증금 합계</span></td>
+        <td><input class="field-input" id="pD" type="text" value="0" oninput="nf(this);calcPrem()"></td>
+      </tr>
+    </table>
+
+    <div id="premResult" style="display:none;">
+      <div class="result-box">
+        <div class="result-head">예상보증금액 산출 결과 (계약기간 2년 · 보증기간 25개월 기준)</div>
+        <div class="result-grid">
+          <div class="result-cell">
+            <div class="rl">담보인정한도 (A × 90%)</div>
+            <div class="rv" id="r_base">—</div>
+            <div class="rs">원</div>
+          </div>
+          <div class="result-cell">
+            <div class="rl">부채비율 (B+C+D ÷ A×90%)</div>
+            <div class="rv" id="r_ratio">—</div>
+            <div class="rs">100% 이하여야 가입 가능</div>
+          </div>
+          <div class="result-cell">
+            <div class="rl">보증금액</div>
+            <div class="rv red" id="r_amt">—</div>
+            <div class="rs">원</div>
+          </div>
+          <div class="result-cell">
+            <div class="rl">예상 보증료 (<span id="r_ratelbl">—</span>/년)</div>
+            <div class="rv red" id="r_prem">—</div>
+            <div class="rs">원 (할인 미적용 금액)</div>
+          </div>
+        </div>
+      </div>
+      <div id="r_status"></div>
+      <div class="check-list" id="r_checks"></div>
+      <div class="info-note">
+        ※ 예상보증료는 전세계약기간 2년(보증기간 25개월) 기준이며, 심사 이후 주택유형·부채비율 등에 따라 달라질 수 있습니다.<br>
+        ※ 부채비율 = 주택가격의 90% 대비 전세보증금, 선순위채권, 선순위임차보증금의 합산액<br>
+        ※ 보증료 할인 안내: <a href="https://www.khug.or.kr" target="_blank">www.khug.or.kr</a><br>
+        ※ 특례반환보증의 경우 전세보증금 상한 적용 제외
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer class="site-footer">
+  <b>제이프라임 공인중개사 사무소</b><br>
+
+  본 계산기는 참고용이며, 실제 보증가입 가능 여부는 HUG(<a href="https://www.khug.or.kr" target="_blank" style="color:#aacfff;">khug.or.kr</a>)에서 확인하시기 바랍니다.
+</footer>
+
+<script>
+const RATES = { apt:0.00128, officetel:0.00128, welfare:0.00128, multi:0.00154, single:0.00208 };
+const RATELBL = { apt:'0.128%', officetel:'0.128%', welfare:'0.128%', multi:'0.154%', single:'0.208%' };
+
+function switchTab(i) {
+  document.querySelectorAll('.tab-btn').forEach((b,j) => b.classList.toggle('active', i===j));
+  document.querySelectorAll('.panel').forEach((p,j) => p.classList.toggle('active', i===j));
+}
+function toggleM(id, headEl) {
+  const body = document.getElementById(id);
+  const arrow = headEl.querySelector('.toggle-arrow');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  arrow.classList.toggle('open', !isOpen);
+}
+function nf(el) {
+  const raw = el.value.replace(/[^0-9]/g,'');
+  if (raw) el.value = Number(raw).toLocaleString('ko-KR');
+}
+function gv(id) { return parseFloat(document.getElementById(id).value.replace(/,/g,'')) || 0; }
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR'); }
+
+function liveCalc(inId, mult, outId) {
+  const v = gv(inId);
+  const r = document.getElementById(outId);
+  if (!v) { r.style.display='none'; return; }
+  r.style.display='block';
+  r.innerHTML = '산출 주택가격: <span class="big">' + fmt(v*mult) + '원</span>';
+}
+function calcAndUse(inId, mult, outId, label) {
+  const v = gv(inId);
+  if (!v) { alert('가격을 입력하세요.'); return; }
+  const res = Math.round(v*mult);
+  document.getElementById(outId).style.display='block';
+  document.getElementById(outId).innerHTML = '산출 주택가격: <span class="big">' + fmt(res) + '원</span>';
+  showCarry('A', res, label);
+}
+function usePrice(inId, mult, label) {
+  const v = gv(inId);
+  if (!v) { alert('가격을 입력하세요.'); return; }
+  showCarry('A', Math.round(v*mult), label);
+}
+function calcAndUseB(inId, mult, outId, label) {
+  const v = gv(inId);
+  if (!v) { alert('가격을 입력하세요.'); return; }
+  const res = Math.round(v*mult);
+  document.getElementById(outId).style.display='block';
+  document.getElementById(outId).innerHTML = '산출 주택가격: <span class="big">' + fmt(res) + '원</span>';
+  showCarry('B', res, label);
+}
+function usePriceB(inId, mult, label) {
+  const v = gv(inId);
+  if (!v) { alert('가격을 입력하세요.'); return; }
+  showCarry('B', Math.round(v*mult), label);
+}
+function calcA6() {
+  const lp=gv('a5_lp'), la=gv('a5_la'), bv=gv('a5_bv'), ta=gv('a5_ta'), sa=gv('a5_sa');
+  const r = document.getElementById('a5r');
+  if (!lp||!la) { r.style.display='none'; return; }
+  const land = lp*la;
+  const ratio = (ta&&sa) ? sa/ta : 1;
+  const res = (land+bv)*ratio*1.4;
+  r.style.display='block';
+  r.innerHTML = '토지가액: '+fmt(land)+'원 | 세대비율: '+(ta&&sa?(sa/ta*100).toFixed(1)+'%':'100%')
+    +' → 주택가격: <span class="big">'+fmt(res)+'원</span>';
+}
+function useA6() {
+  const lp=gv('a5_lp'), la=gv('a5_la'), bv=gv('a5_bv'), ta=gv('a5_ta'), sa=gv('a5_sa');
+  if (!lp||!la) { alert('토지공시지가와 토지면적을 입력하세요.'); return; }
+  const land=lp*la, ratio=(ta&&sa)?sa/ta:1;
+  showCarry('A', Math.round((land+bv)*ratio*1.4), '⑥ 토지+건물×140%');
+}
+function calcB3() {
+  const lp=gv('b2_lp'), la=gv('b2_la'), bv=gv('b2_bv');
+  const r = document.getElementById('b2r');
+  if (!lp||!la) { r.style.display='none'; return; }
+  const res = (lp*la+bv)*1.4;
+  r.style.display='block';
+  r.innerHTML = '(토지가액+건물시가표준액)×1.4 = <span class="big">'+fmt(res)+'원</span>';
+}
+function useB3() {
+  const lp=gv('b2_lp'), la=gv('b2_la'), bv=gv('b2_bv');
+  if (!lp||!la) { alert('토지공시지가와 토지면적을 입력하세요.'); return; }
+  showCarry('B', Math.round((lp*la+bv)*1.4), '③ (토지+건물)×140%');
+}
+function calcB4() {
+  const lp=gv('b3_lp'), la=gv('b3_la'), bv=gv('b3_bv'), ta=gv('b3_ta'), sa=gv('b3_sa');
+  const r = document.getElementById('b3r');
+  if (!lp||!la) { r.style.display='none'; return; }
+  const land=lp*la, ratio=(ta&&sa)?sa/ta:1;
+  const res=(land+bv)*ratio*1.4;
+  r.style.display='block';
+  r.innerHTML='(토지+건물)×세대비율('+(ta&&sa?(sa/ta*100).toFixed(1)+'%':'100%')+')×1.4 = <span class="big">'+fmt(res)+'원</span>';
+}
+function useB4() {
+  const lp=gv('b3_lp'), la=gv('b3_la'), bv=gv('b3_bv'), ta=gv('b3_ta'), sa=gv('b3_sa');
+  if (!lp||!la) { alert('토지공시지가와 토지면적을 입력하세요.'); return; }
+  const land=lp*la, ratio=(ta&&sa)?sa/ta:1;
+  showCarry('B', Math.round((land+bv)*ratio*1.4), '④ 세대면적비율×140%');
+}
+
+function showCarry(tab, price, label) {
+  const id = 'carry' + tab;
+  const txtId = id + '_txt';
+  const el = document.getElementById(id);
+  el.classList.add('show');
+  document.getElementById(txtId).innerHTML =
+    '<b>산정된 주택가격 ('+ label +'): '+ fmt(price) +'원</b>&nbsp;&nbsp;'
+    +'<button class="btn-use" onclick="applyToTab3('+ price +',\''+ label +'\')">③ 예상보증금액 계산에 적용 →</button>';
+}
+function applyToTab3(price, label) {
+  document.getElementById('pA').value = fmt(price);
+  const c = document.getElementById('carryC');
+  c.classList.add('show');
+  document.getElementById('carryC_txt').innerHTML = '<b>적용된 주택가격 ('+ label +'): '+ fmt(price) +'원</b>';
+  switchTab(2);
+  calcPrem();
+}
+
+function calcPrem() {
+  const type = document.getElementById('ht').value;
+  const region = document.getElementById('region').value;
+  const A=gv('pA'), B=gv('pB'), C=gv('pC'), D=gv('pD');
+  const rd = document.getElementById('premResult');
+  if (!type||!A||!B) { rd.style.display='none'; return; }
+  rd.style.display='block';
+
+  const base = A*0.9;
+  const rate = RATES[type];
+  const prem = Math.round(B*rate*(25/12));
+  const ratio = base>0 ? ((B+C+D)/base*100).toFixed(1) : 0;
+  const limit = region==='capital' ? 700000000 : 500000000;
+  const limitLabel = region==='capital' ? '7억원(수도권)' : '5억원(비수도권)';
+
+  document.getElementById('r_base').textContent = fmt(base);
+  document.getElementById('r_ratio').textContent = ratio + '%';
+  document.getElementById('r_amt').textContent = fmt(B);
+  document.getElementById('r_prem').textContent = fmt(prem);
+  document.getElementById('r_ratelbl').textContent = RATELBL[type];
+
+  const checks = [];
+  let ok = true;
+
+  const c1 = (B+C+D) <= base; if(!c1) ok=false;
+  checks.push({p:c1, t:'A×90%('+fmt(base)+'원) ≥ B+C+D('+fmt(B+C+D)+'원)'});
+
+  const c2 = C <= base*0.6; if(!c2) ok=false;
+  checks.push({p:c2, t:'선순위채권(C) '+fmt(C)+'원 ≤ A×90%×60%('+fmt(base*0.6)+'원)'});
+
+  if (type==='multi') {
+    if (D>0) { ok=false; checks.push({p:false, t:'연립·다세대: 선순위임차보증금(D) 있으면 보증가입 불가'}); }
+    else { checks.push({p:true, t:'선순위임차보증금(D) = 0 — 연립·다세대 조건 충족'}); }
+  } else if (type==='single') {
+    const c3=(C+D)<=base*0.8; if(!c3) ok=false;
+    checks.push({p:c3, t:'단독·다가구: C+D('+fmt(C+D)+'원) ≤ A×90%×80%('+fmt(base*0.8)+'원)'});
+    if (D>0) checks.push({p:true, t:'단독·다중·다가구는 D 있어도 조건 충족 시 가입 가능'});
+  }
+
+  const c4 = B <= limit; if(!c4) ok=false;
+  checks.push({p:c4, t:'전세보증금(B) '+fmt(B)+'원 ≤ 상한 '+limitLabel+(c4?' ✓':' ✗ 초과')});
+
+  document.getElementById('r_status').innerHTML = ok
+    ? '<div class="status-ok">✓ 보증가입 가능 — 부채비율 '+ ratio +'%</div>'
+    : '<div class="status-ng">✗ 보증가입 불가 — 아래 조건을 확인하세요</div>';
+
+  document.getElementById('r_checks').innerHTML = checks.map(c =>
+    '<div class="chk"><div class="dot '+(c.p?'dot-ok':'dot-ng')+'"></div>'
+    +'<span style="font-size:12px;color:'+(c.p?'#2a6010':'#900')+';">'+ c.t +'</span></div>'
+  ).join('');
+}
+</script>
+</body>
+</html>
